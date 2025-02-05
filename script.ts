@@ -3,6 +3,10 @@ import { Request, Response } from "express";
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const dotenv = require('dotenv');
+
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,7 +44,7 @@ const isArmstrong = (number: number) => {
 app.get("/api/classify-number", async (req: Request, res: Response) => {
     const { number } = req.query;
     const num = Number(number);
-  
+    
     if (isNaN(num) || !Number.isInteger(num)) {
       return res.status(400).json({ number, error: "Only integers are allowed" });
     }
