@@ -38,30 +38,34 @@ const isArmstrong = (number: number) => {
 };
 
 app.get("/api/classify-number", async (req: Request, res: Response) => {
-  const { number } = req.query;
-  const num = parseInt(number as string);
-
-  if (isNaN(num)) {
-    return res.status(400).json({ number, error: true });
-  }
-
-  const properties = [];
-  if (isArmstrong(num)) properties.push("armstrong");
-  properties.push(num % 2 === 0 ? "even" : "odd");
-
-  try {
-    const funFactRes = await axios.get(`http://numbersapi.com/${num}`);
-    res.json({
-      number: num,
-      is_prime: isPrime(num),
-      is_perfect: isPerfect(num),
-      properties,
-      digit_sum: num.toString().split("").reduce((acc, d) => acc + parseInt(d), 0),
-      fun_fact: funFactRes.data,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch fun fact" });
-  }
-});
+    const { number } = req.query;
+    const num = Number(number);
+  
+    if (isNaN(num) || !Number.isInteger(num)) {
+      return res.status(400).json({ number, error: "Only integers are allowed" });
+    }
+  
+    const properties = [];
+    if (isArmstrong(num)) properties.push("armstrong");
+    properties.push(num % 2 === 0 ? "even" : "odd");
+  
+    try {
+      const funFactRes = await axios.get(`http://numbersapi.com/${num}`);
+      res.json({
+        number: num,
+        is_prime: isPrime(num),
+        is_perfect: isPerfect(num),
+        properties,
+        digit_sum: num
+          .toString()
+          .split("")
+          .reduce((acc, d) => acc + parseInt(d), 0),
+        fun_fact: funFactRes.data,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch fun fact" });
+    }
+  });
+  
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
